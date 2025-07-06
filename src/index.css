@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Kameron:wght@400;700&display=swap');
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DishTrad Design System - Cuisine Camerounaise
+Palette inspirée des couleurs vibrantes du Cameroun
+Toutes les couleurs sont en format HSL pour une cohérence parfaite
+*/
+
+@layer base {
+  :root {
+    /* Couleurs principales DishTrad */
+    --cameroon-green: 140 70% 35%;        /* #1A7B3F - Vert vibrant nature */
+    --cameroon-red: 348 70% 47%;          /* #C62828 - Rouge profond passion */
+    --cameroon-yellow: 45 100% 51%;       /* #FFC107 - Jaune solaire énergie */
+    --cameroon-orange: 24 95% 53%;        /* #F97316 - Orange chaud chaleur */
+    --paper-white: 0 0% 96%;              /* #F5F5F5 - Blanc cassé texturé */
+    
+    /* Design system sémantique */
+    --background: var(--paper-white);
+    --foreground: 0 0% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
+
+    --primary: var(--cameroon-green);
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: var(--paper-white);
+    --secondary-foreground: var(--cameroon-green);
+
+    --muted: 0 0% 93%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: var(--cameroon-yellow);
+    --accent-foreground: 0 0% 15%;
+
+    --destructive: var(--cameroon-red);
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: var(--cameroon-green);
+
+    --radius: 0.75rem;
+
+    /* Gradients camerounais */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--cameroon-green)), hsl(var(--cameroon-yellow)));
+    --gradient-warm: linear-gradient(180deg, hsl(var(--cameroon-orange) / 0.1), hsl(var(--paper-white)));
+    --gradient-vibrant: linear-gradient(45deg, hsl(var(--cameroon-red) / 0.8), hsl(var(--cameroon-orange) / 0.8));
+
+    /* Ombres authentiques */
+    --shadow-cameroon: 0 10px 30px -10px hsl(var(--cameroon-green) / 0.3);
+    --shadow-warm: 0 8px 25px -8px hsl(var(--cameroon-orange) / 0.25);
+    --shadow-elegant: 0 4px 20px -4px hsl(0 0% 0% / 0.15);
+
+    /* Motifs wax (backgrounds subtils) */
+    --pattern-wax: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23F97316' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3Ccircle cx='0' cy='30' r='4'/%3E%3Ccircle cx='60' cy='30' r='4'/%3E%3Ccircle cx='30' cy='0' r='4'/%3E%3Ccircle cx='30' cy='60' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+
+    /* Transitions fluides */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: var(--cameroon-yellow);
+    --primary-foreground: 0 0% 8%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+    --accent: var(--cameroon-orange);
+    --accent-foreground: 0 0% 95%;
+    --destructive: var(--cameroon-red);
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: var(--cameroon-yellow);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-kameron;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-noto-serif font-bold;
+  }
+}
+
+@layer components {
+  /* Boutons DishTrad avec variants camerounais */
+  .btn-cameroon {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:opacity-50 disabled:cursor-not-allowed
+           min-h-[44px] min-w-[44px];
+    border-radius: 12px 12px 12px 0; /* Forme organique caractéristique */
+  }
+
+  .btn-primary {
+    @apply btn-cameroon bg-primary text-primary-foreground hover:bg-destructive 
+           shadow-[var(--shadow-cameroon)] hover:shadow-[var(--shadow-warm)] 
+           transform hover:scale-105 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply btn-cameroon bg-accent text-accent-foreground hover:bg-cameroon-orange 
+           shadow-[var(--shadow-warm)] hover:shadow-[var(--shadow-elegant)];
+  }
+
+  .btn-pulse {
+    animation: pulse-cameroon 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Cartes avec design camerounais */
+  .card-cameroon {
+    @apply bg-card text-card-foreground rounded-[16px_16px_16px_0] 
+           shadow-[var(--shadow-elegant)] border border-border/50
+           hover:shadow-[var(--shadow-warm)] hover:scale-[1.02] 
+           transition-all duration-300 p-6 md:p-8;
+  }
+
+  .card-wax {
+    background-image: var(--pattern-wax);
+  }
+
+  /* Navigation avec motif wax */
+  .nav-cameroon {
+    @apply bg-primary text-primary-foreground shadow-xl backdrop-blur-sm;
+    background-image: var(--pattern-wax);
+    background-size: 120px 120px;
+  }
+
+  /* Inputs avec design camerounais */
+  .input-cameroon {
+    @apply w-full px-4 py-3 border-2 border-input rounded-lg 
+           focus:border-primary focus:ring-2 focus:ring-primary/20 
+           transition-colors duration-200 bg-background
+           min-h-[44px] placeholder:text-muted-foreground;
+    border-radius: 8px 8px 8px 0;
+  }
+
+  /* Modals camerounaises */
+  .modal-cameroon {
+    @apply bg-card/95 backdrop-blur-sm rounded-[16px_16px_16px_0] 
+           shadow-[var(--shadow-elegant)] border border-border/50;
+  }
+
+  /* Animations personnalisées */
+  .slide-in-right {
+    animation: slideInRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .slide-in-left {
+    animation: slideInLeft 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .scale-up {
+    animation: scaleUp 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .fade-in-sequence {
+    animation: fadeInSequence 0.5s ease-out forwards;
+  }
+
+  /* Toast notifications */
+  .toast-cameroon {
+    @apply bg-primary text-primary-foreground rounded-lg shadow-xl 
+           border-l-4 border-accent px-6 py-4 max-w-sm;
+  }
+
+  /* Carrousel avec style camerounais */
+  .carousel-arrow {
+    @apply absolute top-1/2 transform -translate-y-1/2 
+           bg-primary/80 hover:bg-primary text-primary-foreground 
+           rounded-full p-2 transition-all duration-200 
+           hover:scale-110 shadow-lg z-10;
+  }
+
+  /* Accordéon camerounais */
+  .accordion-cameroon {
+    @apply border-b-2 border-border/30 hover:bg-accent/10 
+           transition-colors duration-200;
+  }
+
+  /* Chatbot panel */
+  .chatbot-panel {
+    @apply fixed right-0 top-0 h-screen w-80 bg-card shadow-xl 
+           border-l-4 border-accent transform translate-x-full 
+           transition-transform duration-350 ease-out z-50;
+    background-image: var(--pattern-wax);
+    background-size: 120px 120px;
+  }
+
+  .chatbot-panel.open {
+    @apply translate-x-0;
+  }
+
+  /* Logo DishTrad */
+  .logo-cameroon {
+    @apply flex items-center gap-2 transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Gradient backgrounds */
+  .bg-hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .bg-warm-gradient {
+    background: var(--gradient-warm);
+  }
+
+  .bg-vibrant-gradient {
+    background: var(--gradient-vibrant);
+  }
+}
+
+@layer utilities {
+  /* Utilitaires de rotation pour l'effet non-conventionnel */
+  .rotate-organic-1 { transform: rotate(-2deg); }
+  .rotate-organic-2 { transform: rotate(2deg); }
+  .rotate-organic-3 { transform: rotate(-5deg); }
+
+  /* Utilitaires de texte camerounais */
+  .text-shadow-cameroon {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-shadow-warm {
+    text-shadow: 1px 1px 3px rgba(249, 115, 22, 0.4);
+  }
+
+  /* Animations keyframes */
+  @keyframes pulse-cameroon {
+    0%, 100% { 
+      transform: scale(1); 
+      box-shadow: var(--shadow-cameroon);
+    }
+    50% { 
+      transform: scale(1.05); 
+      box-shadow: var(--shadow-warm);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleUp {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInSequence {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes accordion-down {
+    from { height: 0; opacity: 0; }
+    to { height: var(--radix-accordion-content-height); opacity: 1; }
+  }
+
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+  }
+
+  /* Responsive spacing utilities */
+  .spacing-responsive {
+    @apply space-y-6 md:space-y-8 lg:space-y-12;
+  }
+
+  .padding-responsive {
+    @apply p-4 md:p-6 lg:p-8;
+  }
+
+  .margin-responsive {
+    @apply m-4 md:m-6 lg:m-8;
+  }
+
+  /* Grid responsive utilities */
+  .grid-responsive-cards {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
+           gap-6 md:gap-8 lg:gap-10;
+  }
+
+  .grid-responsive-features {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 
+           gap-8 lg:gap-12;
+  }
+
+  /* Text responsive utilities */
+  .text-responsive-title {
+    @apply text-2xl md:text-3xl lg:text-4xl xl:text-5xl;
+  }
+
+  .text-responsive-subtitle {
+    @apply text-lg md:text-xl lg:text-2xl;
+  }
+
+  .text-responsive-body {
+    @apply text-sm md:text-base lg:text-lg;
+  }
+
+  /* Accessibility improvements */
+  .focus-cameroon {
+    @apply focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-primary;
+  }
+
+  /* Custom scrollbar pour les modals */
+  .scrollbar-cameroon {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+  }
+
+  .scrollbar-cameroon::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-cameroon::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+
+  .scrollbar-cameroon::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
+    border: 1px solid hsl(var(--muted));
+  }
+
+  .scrollbar-cameroon::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--destructive));
+  }
+}
