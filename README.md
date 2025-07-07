@@ -43,7 +43,7 @@
 ### 1. Cloner le projet
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/brandoniscoding-dev/dishtrad-conia.git
 cd dishtrad
 ```
 

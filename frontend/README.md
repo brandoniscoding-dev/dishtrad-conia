@@ -57,7 +57,7 @@ npm install --force
 npm run dev
 ```
 
-Le frontend sera accessible à l'adresse affichée dans la console (souvent `http://localhost:5173`).
+Le frontend sera accessible à l'adresse affichée dans la console (souvent `http://localhost:8080`).
 
 ---
 
