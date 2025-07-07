@@ -34,12 +34,26 @@ interface Meal {
   }[];
 }
 
+interface Message {
+  id: string;
+  text?: string;
+  imageUrl?: string;
+  isUser: boolean;
+  timestamp: Date;
+  sources?: string[];
+}
+
 const HomePage: React.FC = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
+  // --- Chatbot states ---
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [isAIEnabled, setIsAIEnabled] = useState(true);
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -56,6 +70,69 @@ const HomePage: React.FC = () => {
     fetchMeals();
   }, []);
 
+  // Envoi message texte au chatbot (avec flag mode IA)
+  const sendMessageToChatbot = async (message: string, image?: File | null) => {
+    if (!message.trim() && !image) return;
+
+    const newMessage: Message = {
+      id: Math.random().toString(36).substring(2), // Generate unique ID
+      text: message || undefined,
+      imageUrl: image ? URL.createObjectURL(image) : undefined,
+      isUser: true,
+      timestamp: new Date(),
+    };
+
+    setChatMessages((msgs) => [...msgs, newMessage]);
+    setChatLoading(true);
+
+    try {
+      if (image) {
+        const formData = new FormData();
+        formData.append('image', image);
+
+        const response = await axios.post('http://localhost:5000/api/classify-image', formData);
+        const data = response.data.data;
+        const botReply: Message = {
+          id: Math.random().toString(36).substring(2),
+          text: `Je pense que c'est du **${data.predictedClass}** ! ${data.chatbotResponse || ''}`,
+          isUser: false,
+          timestamp: new Date(),
+        };
+
+        setChatMessages((msgs) => [...msgs, botReply]);
+      } else {
+        const response = await axios.post('http://localhost:5000/api/chatbot', {
+          message,
+          isAI: isAIEnabled,
+        });
+
+        const botReplyText = response.data.data.response || 'Pas de réponse.';
+        const sources = response.data.data.sources || [];
+
+        const botReply: Message = {
+          id: Math.random().toString(36).substring(2),
+          text: botReplyText,
+          isUser: false,
+          timestamp: new Date(),
+          sources,
+        };
+
+        setChatMessages((msgs) => [...msgs, botReply]);
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMessage: Message = {
+        id: Math.random().toString(36).substring(2),
+        text: 'Erreur lors de la communication avec le chatbot.',
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setChatMessages((msgs) => [...msgs, errorMessage]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-100">
       <Navbar />
@@ -70,11 +147,13 @@ const HomePage: React.FC = () => {
         <h1 className="font-noto-serif font-bold text-4xl text-amber-900 mb-8 text-center">
           Découvrez les Saveurs Authentiques du Cameroun
         </h1>
+
         {loading && <div className="text-center text-amber-800">Chargement...</div>}
         {error && <div className="text-center text-red-600">{error}</div>}
         {!loading && meals.length === 0 && (
           <div className="text-center text-amber-800">Aucun plat disponible</div>
         )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {meals.map((meal) => (
             <div
@@ -103,6 +182,7 @@ const HomePage: React.FC = () => {
           ))}
         </div>
       </main>
+
       <Dialog open={!!selectedMeal} onOpenChange={() => setSelectedMeal(null)}>
         <DialogContent className="sm:max-w-[600px] bg-white rounded-xl">
           <DialogHeader>
@@ -173,10 +253,17 @@ const HomePage: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+
       <Footer />
+
       <ChatbotPanel
         isOpen={isChatbotOpen}
         onToggle={() => setIsChatbotOpen(!isChatbotOpen)}
+        messages={chatMessages}
+        sendMessage={sendMessageToChatbot}
+        isAIEnabled={isAIEnabled}
+        setIsAIEnabled={setIsAIEnabled}
+        loading={chatLoading}
       />
     </div>
   );

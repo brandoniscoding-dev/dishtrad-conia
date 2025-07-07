@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,7 +9,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import LandingPage from './pages/LandingPage';
 import HomePage from './pages/HomePage';
 import RecipePage from './pages/RecipePage';
-import RestaurantPage from './pages/RestaurantPage'; // NEW
+import RestaurantPage from './pages/RestaurantPage';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFound from './pages/NotFound';
 
@@ -29,11 +30,15 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean 
 }) => {
   const { user, isAuthenticated } = useAuth();
 
+  console.log('ProtectedRoute: user:', user, 'isAuthenticated:', isAuthenticated);
+
   if (!isAuthenticated) {
+    console.log('ProtectedRoute: Redirection vers / car non authentifié');
     return <Navigate to="/" replace />;
   }
 
-  if (adminOnly && (!user || user.role !== 'admin')) {
+  if (adminOnly && (!user || user.role.toLowerCase() !== 'admin')) {
+    console.log('ProtectedRoute: Redirection vers /home car pas admin ou user null');
     return <Navigate to="/home" replace />;
   }
 
@@ -42,6 +47,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean 
 
 const AppRoutes: React.FC = () => {
   const { isAuthenticated } = useAuth();
+
+  console.log('AppRoutes: isAuthenticated:', isAuthenticated);
 
   return (
     <Routes>
@@ -72,15 +79,8 @@ const AppRoutes: React.FC = () => {
             <RestaurantPage />
           </ProtectedRoute>
         }
-      /> {/* NEW */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute adminOnly>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
       />
+      <Route path="/admin" element={<AdminDashboard />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

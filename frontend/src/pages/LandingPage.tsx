@@ -1,40 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, MapPin, BookOpen, Heart, Key, Star, Rocket } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search, MapPin, BookOpen, Heart, Key, Star, Rocket } from 'lucide-react';
 import Logo from '../components/Logo';
 import Footer from '../components/Footer';
 import LoginModal from '../components/modals/LoginModal';
 import RegisterModal from '../components/modals/RegisterModal';
 import { useAuth } from '../context/AuthContext';
-
-// Images statiques pour le carrousel (en attendant les données API)
-const carouselImages = [
-  {
-    url: '/api/placeholder/1400/700',
-    alt: 'Ndolé traditionnel camerounais',
-    title: 'Ndolé authentique'
-  },
-  {
-    url: '/api/placeholder/1400/700', 
-    alt: 'Poulet DG festif',
-    title: 'Poulet DG royal'
-  },
-  {
-    url: '/api/placeholder/1400/700',
-    alt: 'Eru du Sud-Ouest',
-    title: 'Eru traditionnel'
-  },
-  {
-    url: '/api/placeholder/1400/700',
-    alt: 'Koki vapeur',
-    title: 'Koki authentique'
-  },
-  {
-    url: '/api/placeholder/1400/700',
-    alt: 'Achu sauce jaune',
-    title: 'Achu délicieux'
-  }
-];
 
 const testimonials = [
   {
@@ -65,7 +36,7 @@ const features = [
   },
   {
     icon: MapPin,
-    title: 'Restaurants vivants', 
+    title: 'Restaurants vivants',
     description: 'Menus authentiques, localisations précises et évaluations de la communauté.'
   },
   {
@@ -82,31 +53,8 @@ const features = [
 
 const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
-
-  // Carrousel automatique
-  useEffect(() => {
-    if (isCarouselPaused) return;
-
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isCarouselPaused]);
-
-  const handlePrevious = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? carouselImages.length - 1 : prev - 1
-    );
-  };
-
-  const handleNext = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
-  };
 
   const handleExploreClick = () => {
     if (!isAuthenticated) {
@@ -123,47 +71,24 @@ const LandingPage: React.FC = () => {
         <Logo size="medium" />
       </div>
 
-      {/* Bannière Hero avec Carrousel */}
-      <section 
-        className="relative h-112 md:h-144 overflow-hidden bg-hero-gradient"
-        onMouseEnter={() => setIsCarouselPaused(true)}
-        onMouseLeave={() => setIsCarouselPaused(false)}
-      >
-        {/* Carrousel d'images */}
-        <div className="absolute inset-0">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={currentImageIndex}
-              src={carouselImages[currentImageIndex].url}
-              alt={carouselImages[currentImageIndex].alt}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 0.8, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.8, ease: 'easeInOut' }}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </AnimatePresence>
-        </div>
+      {/* Bannière Hero avec Gradient */}
+      <section className="relative h-112 md:h-144 overflow-hidden">
+        {/* Gradient Background with Cameroonian Colors */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-green-600 via-red-600 to-yellow-400"
+          style={{
+            backgroundImage: `
+              linear-gradient(45deg, #008000 33.33%, #FF0000 33.33%, #FF0000 66.66%, #FFC107 66.66%),
+              url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M50 15 L59.8 35.2 L80 35.2 L63.6 47.8 L73.2 68 L50 55.2 L26.8 68 L36.4 47.8 L20 35.2 L40.2 35.2 Z' fill='%23FFD700'/%3E%3C/svg%3E")`,
+            backgroundSize: 'cover, 50px 50px',
+            backgroundPosition: 'center, center',
+            backgroundRepeat: 'no-repeat, repeat',
+            opacity: 0.9,
+          }}
+        />
 
-        {/* Overlay gradient */}
+        {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-
-        {/* Flèches de navigation */}
-        <button
-          onClick={handlePrevious}
-          className="carousel-arrow left-6"
-          aria-label="Image précédente"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="carousel-arrow right-6"
-          aria-label="Image suivante"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
 
         {/* Contenu Hero */}
         <div className="absolute inset-0 flex items-center">
@@ -178,10 +103,10 @@ const LandingPage: React.FC = () => {
                 DishTrad : Un voyage culinaire vibrant
               </h1>
               <p className="font-kameron text-lg md:text-xl text-white/90 mb-8 text-shadow-warm">
-                Découvrez des plats authentiques, des recettes vivantes, et des restaurants locaux 
+                Découvrez des plats authentiques, des recettes vivantes, et des restaurants locaux
                 dans une expérience immersive unique de la cuisine camerounaise.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setIsLoginOpen(true)}
@@ -201,22 +126,6 @@ const LandingPage: React.FC = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-
-        {/* Indicateurs de carrousel */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
-          {carouselImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                index === currentImageIndex 
-                  ? 'bg-accent scale-125' 
-                  : 'bg-white/50 hover:bg-white/70'
-              }`}
-              aria-label={`Aller à l'image ${index + 1}`}
-            />
-          ))}
         </div>
       </section>
 
@@ -346,16 +255,16 @@ const LandingPage: React.FC = () => {
       <Footer />
 
       {/* Modals */}
-      <LoginModal 
-        isOpen={isLoginOpen} 
+      <LoginModal
+        isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         onSwitchToRegister={() => {
           setIsLoginOpen(false);
           setIsRegisterOpen(true);
         }}
       />
-      <RegisterModal 
-        isOpen={isRegisterOpen} 
+      <RegisterModal
+        isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
         onSwitchToLogin={() => {
           setIsRegisterOpen(false);
